@@ -24,3 +24,4 @@ dependencyResolutionManagement {
 rootProject.name = "ZeroClaw"
 include(":app")
 include(":lib")
+include(":car")
