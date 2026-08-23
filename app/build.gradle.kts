@@ -1,5 +1,6 @@
 dependencies {
     implementation(project(":lib"))
+    implementation(project(":car"))
 
     implementation(platform(libs.compose.bom))
     implementation(libs.compose.material3)
