@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest package="com.zeroclaw.android.car" xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-sdk android:minSdkVersion="26" android:targetSdkVersion="35"/>
+
+    <application>
+        <service
+            android:name=".CarService"
+            android:exported="true"
+            android:permission="android.permission.BIND_CAR_APP">
+            <intent-filter>
+                <action android:name="androidx.car.app.CarAppService" />
+            </intent-filter>
+            <meta-data
+                android:name="androidx.car.app"
+                android:resource="@xml/automotive_app_desc" />
+        </service>
+    </application>
+</manifest>
