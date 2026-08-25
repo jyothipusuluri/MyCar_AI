@@ -28,12 +28,12 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Set up Android SDK
-        uses: r0adkll/setup-android@v2
+      - name: Set up Android SDK (Google action)
+        uses: google-github-actions/setup-android@v2
         with:
           api-level: 33
           build-tools: '33.0.2'
-          target: android-33
+          # platform-tools and platforms will be installed by the action
 
       - name: Install Android NDK (r27c)
         run: |
@@ -68,13 +68,18 @@ jobs:
 
       - name: Write google-services.json from secret (if provided)
         run: |
+          set -euo pipefail
+          mkdir -p app
           if [ -n "${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}" ]; then
-            echo "GOOGLE_SERVICES_JSON_BASE64 is set — writing app/google-services.json"
-            mkdir -p app
-            echo "${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}" | base64 --decode > app/google-services.json
-            echo "Wrote app/google-services.json"
+            echo "Using GOOGLE_SERVICES_JSON_BASE64 to write app/google-services.json"
+            printf '%s' "${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}" | base64 --decode > app/google-services.json
+            echo "Wrote app/google-services.json (from base64 secret)"
+          elif [ -n "${{ secrets.GOOGLE_SERVICES_JSON_RAW }}" ]; then
+            echo "Using GOOGLE_SERVICES_JSON_RAW to write app/google-services.json"
+            printf '%s' "${{ secrets.GOOGLE_SERVICES_JSON_RAW }}" > app/google-services.json
+            echo "Wrote app/google-services.json (from raw secret)"
           else
-            echo "GOOGLE_SERVICES_JSON_BASE64 not set — skipping write of google-services.json"
+            echo "No google-services secret found (GOOGLE_SERVICES_JSON_BASE64 or GOOGLE_SERVICES_JSON_RAW) — skipping"
           fi
 
       - name: Build APK (assembleDebug)
