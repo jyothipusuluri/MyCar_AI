@@ -67,11 +67,15 @@ jobs:
           CARGO_HOME: ${{ env.HOME }}/.cargo
 
       - name: Write google-services.json from secret (if provided)
-        if: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64 != '' }}
         run: |
-          echo "$GOOGLE_SERVICES_JSON_BASE64" | base64 --decode > app/google-services.json
-        env:
-          GOOGLE_SERVICES_JSON_BASE64: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}
+          if [ -n "${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}" ]; then
+            echo "GOOGLE_SERVICES_JSON_BASE64 is set — writing app/google-services.json"
+            mkdir -p app
+            echo "${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}" | base64 --decode > app/google-services.json
+            echo "Wrote app/google-services.json"
+          else
+            echo "GOOGLE_SERVICES_JSON_BASE64 not set — skipping write of google-services.json"
+          fi
 
       - name: Build APK (assembleDebug)
         run: ./gradlew :app:assembleDebug --no-daemon --stacktrace
